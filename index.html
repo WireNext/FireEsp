@@ -3,18 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa Incendios España</title>
+    <title>Mapa de Incendios</title>
+    
+    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
     <style>
+        /* Elimina márgenes por defecto y hace que el mapa ocupe todo el espacio disponible */
         html, body, #map {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
-            background-color: #111;
+            background-color: #111; /* Fondo oscuro mientras carga */
+            overflow: hidden;
         }
-        .leaflet-control-attribution {
-            display: none !important;
+        /* Oculta el borde de enfoque que añade a veces Leaflet */
+        #map:focus {
+            outline: none;
         }
     </style>
 </head>
@@ -22,26 +28,25 @@
 
     <div id="map"></div>
 
+    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Inicializar mapa centrado en España
-        const map = L.map('map').setView([40.416775, -3.703790], 6);
+        // 1. Inicializar mapa centrado en España y desactivar los botones de control (+/-)
+        const map = L.map('map', {
+            zoomControl: false, // Quita los botones de zoom para máxima limpieza
+            attributionControl: false // Oculta el texto de créditos inferior para evitar barras de scroll
+        }).setView([40.416775, -3.703790], 6);
 
-        // Capa base oscura (CartoDB Dark Matter)
+        // 2. Capa base oscura (CartoDB Dark Matter) para que resalten los fuegos
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
             maxZoom: 18
         }).addTo(map);
 
-        // Clave MAP_KEY que venía en tu URL anterior
-        const mapKey = 'e25ca48fbff6180dfd30666014e768e9';
-
-        // Capa WMS de la NASA (FIRMS) - Carga los puntos directamente en ROJO y evita los problemas de CORS
-        L.tileLayer.wms('https://firms.modaps.eosdis.nasa.gov/wms/key/' + mapKey, {
-            layers: 'fires_viirs_snpp_24', // Incendios detectados por VIIRS en las últimas 24 horas
+        // 3. Capa WMS de Copernicus (EFFIS) con los focos activos de satélites
+        L.tileLayer.wms('https://maps.effis.emergency.copernicus.eu/effis', {
+            layers: 'modis.hs,viirs.hs', // Focos activos detectados por MODIS y VIIRS
             format: 'image/png',
-            transparent: true,
-            version: '1.1.1',
-            opacity: 0.9
+            transparent: true
         }).addTo(map);
     </script>
 </body>
