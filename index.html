@@ -3,16 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa de Calor - Incendios</title>
-    
+    <title>Mapa Incendios Activos España</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; }
-        #map { height: 100vh; width: 100%; background: #000; }
-        
-        /* Estilo sutil para los puntos de fuego */
-        .leaflet-interactive { cursor: default !important; }
+        html, body, #map {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #111;
+        }
+        .leaflet-control-attribution {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -20,52 +23,48 @@
     <div id="map"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
-
     <script>
-        // Inicializar mapa centrado en España sin controles innecesarios
-        const map = L.map('map', {
-            zoomControl: false,
-            attributionControl: true
-        }).setView([40.4637, -3.7492], 6);
+        // Inicializar mapa centrado en España
+        const map = L.map('map').setView([40.416775, -3.703790], 6);
 
-        // Capa oscura minimalista
+        // Capa base oscura para que resalte el rojo
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; NASA FIRMS | CARTO'
+            maxZoom: 18
         }).addTo(map);
 
-        const csvUrl = 'https://firms.modaps.eosdis.nasa.gov/api/area/csv/326446a2a9467426f908bf9091476adb/VIIRS_SNPP_NRT/world/2/2026-04-27';
+        // URL del GeoJSON de la NASA (FIRMS) para incendios de las últimas 24h en la región de Europa
+        // Usamos el satélite VIIRS (sugoomi-npp), que tiene una resolución excelente de 375m
+        const urlIncendios = 'https://firms.modaps.eosdis.nasa.gov/api/area/geojson/e25ca48fbff6180dfd30666014e768e9/VIIRS_SNPP_NRT/europe/1';
 
-        async function loadFires() {
-            try {
-                const response = await fetch(csvUrl);
-                const csvData = await response.text();
-                
-                Papa.parse(csvData, {
-                    header: true,
-                    dynamicTyping: true,
-                    complete: function(results) {
-                        results.data.forEach(point => {
-                            if (point.latitude && point.longitude) {
-                                L.circleMarker([point.latitude, point.longitude], {
-                                    radius: 3,
-                                    fillColor: "#ff4400",
-                                    color: "#ff0000",
-                                    weight: 0.5,
-                                    opacity: 0.8,
-                                    fillOpacity: 0.7,
-                                    interactive: false // Desactiva clics y eventos
-                                }).addTo(map);
-                            }
+        fetch(urlIncendios)
+            .then(response => response.json())
+            .then(data => {
+                // Filtrar los datos para que solo pinte los que caen dentro de España (cuadro delimitador aproximado)
+                const puntosEspana = {
+                    type: "FeatureCollection",
+                    features: data.features.filter(f => {
+                        const lon = f.geometry.coordinates[0];
+                        const lat = f.geometry.coordinates[1];
+                        // Coordenadas aproximadas de España (incluyendo Baleares y Canarias)
+                        return (lat > 27 && lat < 44 && lon > -18 && lon < 5);
+                    })
+                };
+
+                // Añadir los puntos al mapa y darles estilo ROJO
+                L.geoJSON(puntosEspana, {
+                    pointToLayer: function (feature, latlng) {
+                        return L.circleMarker(latlng, {
+                            radius: 5,         // Tamaño del punto
+                            fillColor: "#ff2200", // Rojo fuego brillante
+                            color: "#ff6600",     // Borde ligeramente anaranjado para dar efecto de calor
+                            weight: 1,
+                            opacity: 0.8,
+                            fillOpacity: 0.9
                         });
                     }
-                });
-            } catch (e) {
-                console.error("Error al obtener datos");
-            }
-        }
-
-        loadFires();
+                }).addTo(map);
+            })
+            .catch(err => console.error("Error cargando los datos de incendios: ", err));
     </script>
 </body>
 </html>
