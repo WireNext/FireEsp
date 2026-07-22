@@ -3,51 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa de Incendios</title>
+    <title>Monitor de Incendios en España | NASA FIRMS + 112CV</title>
     
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Leaflet CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     
-    <style>
-        /* Elimina márgenes por defecto y hace que el mapa ocupe todo el espacio disponible */
-        html, body, #map {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #111; /* Fondo oscuro mientras carga */
-            overflow: hidden;
-        }
-        /* Oculta el borde de enfoque que añade a veces Leaflet */
-        #map:focus {
-            outline: none;
-        }
-    </style>
+    <!-- MarkerCluster CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div id="app-container">
+        <!-- Panel Lateral -->
+        <aside id="sidebar" class="sidebar">
+            <header class="sidebar-header">
+                <div class="logo">
+                    <i class="fa-solid fa-fire-flame-curved logo-icon"></i>
+                    <div>
+                        <h1>MeteoFire España</h1>
+                        <span class="subtitle">Detección y Emergencias en Tiempo Real</span>
+                    </div>
+                </div>
+            </header>
 
-    <div id="map"></div>
+            <div class="sidebar-content">
+                <!-- Fuentes de datos -->
+                <section class="panel-section">
+                    <h2><i class="fa-solid fa-layer-group"></i> Fuentes de Datos</h2>
+                    <div class="toggle-group">
+                        <label class="toggle-card">
+                            <input type="checkbox" id="toggle-nasa" checked>
+                            <span class="toggle-indicator nasa"></span>
+                            <div class="toggle-info">
+                                <span class="toggle-title">NASA FIRMS (VIIRS)</span>
+                                <span class="toggle-sub">Puntos calientes satelitales</span>
+                            </div>
+                            <span class="badge" id="count-nasa">0</span>
+                        </label>
 
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script>
-        // 1. Inicializar mapa centrado en España y desactivar los botones de control (+/-)
-        const map = L.map('map', {
-            zoomControl: false, // Quita los botones de zoom para máxima limpieza
-            attributionControl: false // Oculta el texto de créditos inferior para evitar barras de scroll
-        }).setView([40.416775, -3.703790], 6);
+                        <label class="toggle-card">
+                            <input type="checkbox" id="toggle-cv112" checked>
+                            <span class="toggle-indicator cv112"></span>
+                            <div class="toggle-info">
+                                <span class="toggle-title">112 Comunitat Valenciana</span>
+                                <span class="toggle-sub">Incidentes de incendio activos</span>
+                            </div>
+                            <span class="badge" id="count-cv112">0</span>
+                        </label>
+                    </div>
+                </section>
 
-        // 2. Capa base oscura (CartoDB Dark Matter) para que resalten los fuegos
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            maxZoom: 18
-        }).addTo(map);
+                <!-- Filtros -->
+                <section class="panel-section">
+                    <h2><i class="fa-solid fa-filter"></i> Filtros de Visualización</h2>
+                    
+                    <div class="filter-box">
+                        <label for="nasa-confidence">Confianza NASA:</label>
+                        <select id="nasa-confidence">
+                            <option value="all">Todas (Alta, Normal, Baja)</option>
+                            <option value="h">Alta Confianza (High)</option>
+                            <option value="n">Normal (Nominal)</option>
+                            <option value="l">Baja Confianza (Low)</option>
+                        </select>
+                    </div>
 
-        // 3. Capa WMS de Copernicus (EFFIS) con los focos activos de satélites
-        L.tileLayer.wms('https://maps.effis.emergency.copernicus.eu/effis', {
-            layers: 'modis.hs,viirs.hs', // Focos activos detectados por MODIS y VIIRS
-            format: 'image/png',
-            transparent: true
-        }).addTo(map);
-    </script>
+                    <div class="filter-box">
+                        <label for="frp-range">Potencia Térmica Mínima (FRP MW): <span id="frp-val">0</span></label>
+                        <input type="range" id="frp-range" min="0" max="100" value="0" step="5">
+                    </div>
+
+                    <div class="filter-box">
+                        <label for="search-input">Buscar Municipio / Lugar (112CV):</label>
+                        <div class="search-wrapper">
+                            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                            <input type="text" id="search-input" placeholder="Ej. Cirat, Peníscola...">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Resumen -->
+                <section class="panel-section stats-section">
+                    <h2><i class="fa-solid fa-chart-pie"></i> Resumen de Alertas</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-num" id="stat-total">0</span>
+                            <span class="stat-label">Total Activos</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-num" id="stat-max-frp">0</span>
+                            <span class="stat-label">Máx. FRP (MW)</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Lista de Incidentes 112CV -->
+                <section class="panel-section list-section">
+                    <h2><i class="fa-solid fa-list-ul"></i> Lista de Incidentes 112CV</h2>
+                    <div id="incidents-list" class="incidents-list">
+                        <p class="empty-msg">Cargando datos del 112CV...</p>
+                    </div>
+                </section>
+            </div>
+
+            <footer class="sidebar-footer">
+                <button id="btn-refresh" class="btn-refresh">
+                    <i class="fa-solid fa-rotate-right"></i> Actualizar Datos
+                </button>
+                <div id="status-message" class="status-message">
+                    <i class="fa-solid fa-circle-check"></i> Sistema listo
+                </div>
+            </footer>
+        </aside>
+
+        <!-- Botón para móviles -->
+        <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Abrir panel">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <!-- Contenedor del Mapa -->
+        <main id="map" class="map-container"></main>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>

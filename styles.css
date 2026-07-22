@@ -1,0 +1,211 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body, html {
+    height: 100%;
+    width: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: #121824;
+    color: #e2e8f0;
+    overflow: hidden;
+}
+
+#app-container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    position: relative;
+}
+
+/* Panel Lateral */
+.sidebar {
+    width: 360px;
+    height: 100%;
+    background-color: #1e293b;
+    border-right: 1px solid #334155;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease;
+}
+
+.sidebar-header {
+    padding: 20px;
+    background-color: #0f172a;
+    border-bottom: 1px solid #334155;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-icon {
+    font-size: 1.8rem;
+    color: #f97316;
+}
+
+.logo h1 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #f8fafc;
+}
+
+.logo .subtitle {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    display: block;
+}
+
+.sidebar-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.panel-section h2 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #94a3b8;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Tarjetas Conmutadoras */
+.toggle-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toggle-card {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.toggle-card input[type="checkbox"] { display: none; }
+
+.toggle-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 12px;
+    opacity: 0.3;
+}
+
+.toggle-indicator.nasa { background-color: #ef4444; }
+.toggle-indicator.cv112 { background-color: #f59e0b; }
+
+.toggle-card input[type="checkbox"]:checked + .toggle-indicator { opacity: 1; }
+
+.toggle-info { flex: 1; }
+.toggle-title { display: block; font-size: 0.9rem; font-weight: 600; color: #f1f5f9; }
+.toggle-sub { display: block; font-size: 0.75rem; color: #64748b; }
+
+.badge {
+    background-color: #334155;
+    color: #f8fafc;
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+/* Controles */
+.filter-box { margin-bottom: 12px; }
+.filter-box label { display: block; font-size: 0.8rem; color: #cbd5e1; margin-bottom: 6px; }
+.filter-box select, .filter-box input[type="text"] {
+    width: 100%;
+    padding: 8px 12px;
+    background-color: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    color: #f8fafc;
+    outline: none;
+}
+.filter-box input[type="range"] { width: 100%; accent-color: #f97316; }
+
+.search-wrapper { position: relative; }
+.search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #64748b; }
+.search-wrapper input { padding-left: 32px; }
+
+/* Resumen Estadístico */
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.stat-card { background-color: #0f172a; border: 1px solid #334155; padding: 12px; border-radius: 8px; text-align: center; }
+.stat-num { display: block; font-size: 1.4rem; font-weight: 700; color: #f97316; }
+.stat-label { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; }
+
+/* Lista 112CV */
+.incidents-list { display: flex; flex-direction: column; gap: 8px; max-height: 220px; overflow-y: auto; }
+.incident-item {
+    background-color: #0f172a;
+    border-left: 4px solid #f59e0b;
+    padding: 10px;
+    border-radius: 0 6px 6px 0;
+    cursor: pointer;
+}
+.incident-item:hover { background-color: #182234; }
+.incident-item-title { font-size: 0.85rem; font-weight: 600; color: #f1f5f9; }
+.incident-item-sub { font-size: 0.75rem; color: #94a3b8; margin-top: 2px; }
+
+/* Footer */
+.sidebar-footer { padding: 16px; background-color: #0f172a; border-top: 1px solid #334155; }
+.btn-refresh {
+    width: 100%; padding: 10px; background-color: #ea580c; color: white; border: none;
+    border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-refresh:hover { background-color: #c2410c; }
+.status-message { font-size: 0.75rem; color: #10b981; text-align: center; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+
+/* Mapa y Popups */
+.map-container { flex: 1; height: 100%; width: 100%; background-color: #0b0f19; }
+.leaflet-popup-content-wrapper { background: #1e293b; color: #f8fafc; border-radius: 8px; border: 1px solid #334155; }
+.leaflet-popup-tip { background: #1e293b; }
+.custom-popup { padding: 14px; min-width: 220px; }
+.popup-header { display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #334155; padding-bottom: 8px; margin-bottom: 10px; }
+.popup-header.nasa i { color: #ef4444; }
+.popup-header.cv112 i { color: #f59e0b; }
+.popup-body { font-size: 0.8rem; line-height: 1.5; }
+.popup-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+.popup-label { color: #94a3b8; }
+.popup-value { color: #f1f5f9; font-weight: 500; }
+.popup-footer { margin-top: 10px; padding-top: 8px; border-top: 1px dashed #334155; font-size: 0.7rem; color: #64748b; text-align: right; }
+
+/* Marcadores animados */
+.nasa-marker-pulse {
+    width: 16px; height: 16px; background-color: rgba(239, 68, 68, 0.9);
+    border: 2px solid #ffffff; border-radius: 50%;
+    animation: pulse 1.8s infinite;
+}
+.cv112-marker-pulse {
+    width: 20px; height: 20px; background-color: #f59e0b; border: 2px solid #ffffff;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #0f172a; font-size: 10px;
+}
+
+@keyframes pulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+    70% { transform: scale(1.15); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+@media (max-width: 768px) {
+    .sidebar { position: absolute; top: 0; left: 0; transform: translateX(-100%); width: 300px; }
+    .sidebar.active { transform: translateX(0); }
+    .sidebar-toggle { display: block; }
+}
