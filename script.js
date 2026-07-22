@@ -224,7 +224,7 @@ function renderData() {
 
             const customIcon = L.divIcon({
                 className: 'custom-div-icon',
-                html: `<div class="cv112-marker-pulse"><i class="fa-solid fa-triangle-exclamation"></i></div>`,
+            html: `<div class="cv112-marker-pulse"><i class="fa-solid fa-fire-flame-curved"></i></div>`,
                 iconSize: [20, 20],
                 iconAnchor: [10, 10]
             });
