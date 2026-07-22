@@ -17,9 +17,9 @@ const state = {
 };
 
 const ENDPOINTS = {
-    NASA: 'https://firms.modaps.eosdis.nasa.gov/api/area/csv/e5b0c56d0b059dbd11c8dfe53dea278f/VIIRS_SNPP_NRT/world/1/',
+    NASA: 'https://firms.modaps.eosdis.nasa.gov/api/area/csv/e5b0c56d0b059dbd11c8dfe53dea278f/VIIRS_SNPP_NRT/world/1',
     CV112: '/api/cv112',
-    JCYL: 'https://servicios.jcyl.es/incyl/json/emergencias'
+    JCYL: '/api/cyl.js'
 };
 
 document.addEventListener('DOMContentLoaded', () => {
