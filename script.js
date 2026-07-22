@@ -292,30 +292,60 @@ function renderData() {
         });
     }
 
-    // 3. JCyL (Oculta si está extinguido y el filtro está activo)
-    const jcylList = document.getElementById('jcyl-list');
-    jcylList.innerHTML = '';
+    const jcylListContainer = document.getElementById('jcyl-list');
+    jcylListContainer.innerHTML = '';
     if (state.filters.jcylEnabled) {
         state.jcylRawData.forEach(item => {
-            if (state.filters.hideExtinguished && item.extinguido) return;
-
             countJcyl++;
-            const marker = L.marker([item.lat, item.lon], {
-                icon: L.divIcon({
-                    className: 'custom-div-icon',
-                    html: `<div class="jcyl-marker-pulse" style="background-color: ${item.estadoColor}"><i class="fa-solid fa-fire"></i></div>`,
-                    iconSize: [20, 20], iconAnchor: [10, 10]
-                })
-            }).bindPopup(`<b>JCyL (${item.provincia}):</b> ${item.municipio}<br>Estado: <span style="color:${item.estadoColor}">${item.estado}</span>`);
+            const customIcon = L.divIcon({
+                className: 'custom-div-icon',
+                html: `<div class="jcyl-marker-pulse" style="background-color: ${item.estadoColor}"><i class="fa-solid fa-fire"></i></div>`,
+                iconSize: [20, 20],
+                iconAnchor: [10, 10]
+            });
+
+            const popupContent = `
+                <div class="custom-popup">
+                    <div class="popup-header jcyl">
+                        <i class="fa-solid fa-fire"></i>
+                        <h3>Junta de Castilla y León</h3>
+                    </div>
+                    <div class="popup-body">
+                        <div class="popup-row"><span class="popup-label">Municipio:</span><span class="popup-value"><strong>${item.municipio} (${item.provincia})</strong></span></div>
+                        <div class="popup-row"><span class="popup-label">Comarca:</span><span class="popup-value">${item.comarca}</span></div>
+                        <div class="popup-row"><span class="popup-label">Estado:</span><span class="popup-value" style="color:${item.estadoColor}">${item.estado}</span></div>
+                        <div class="popup-row"><span class="popup-label">Causa:</span><span class="popup-value">${item.causa}</span></div>
+                        <div class="popup-row"><span class="popup-label">Inicio:</span><span class="popup-value">${item.fechaInicio}</span></div>
+                    </div>
+                    <div class="popup-footer">Fuente: JCyL</div>
+                </div>
+            `;
+
+            const marker = L.marker([item.lat, item.lon], { icon: customIcon }).bindPopup(popupContent);
             state.jcylLayerGroup.addLayer(marker);
 
-            const div = document.createElement('div');
-            div.className = 'incident-item jcyl-item';
-            div.innerHTML = `<div class="incident-item-title">${item.municipio} (${item.provincia})</div><div class="incident-item-sub"><i class="fa-solid fa-circle" style="color: ${item.estadoColor}"></i> Estado: ${item.estado}</div>`;
-            div.onclick = () => { state.map.setView([item.lat, item.lon], 13); marker.openPopup(); };
-            jcylList.appendChild(div);
+            const listItem = document.createElement('div');
+            listItem.className = 'incident-item jcyl-item';
+            listItem.innerHTML = `
+                <div class="incident-item-title">${item.municipio} (${item.provincia})</div>
+                <div class="incident-item-sub"><i class="fa-solid fa-circle" style="color: ${item.estadoColor}"></i> Estado: ${item.estado}</div>
+                <div class="incident-item-sub"><i class="fa-solid fa-clock"></i> ${item.fechaInicio}</div>
+            `;
+            listItem.addEventListener('click', () => {
+                state.map.setView([item.lat, item.lon], 13);
+                marker.openPopup();
+                if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('active');
+            });
+            jcylListContainer.appendChild(listItem);
         });
     }
+
+    document.getElementById('count-nasa').textContent = countNasa;
+    document.getElementById('count-cv112').textContent = countCv112;
+    document.getElementById('count-jcyl').textContent = countJcyl;
+    document.getElementById('stat-total').textContent = countNasa + countCv112 + countJcyl;
+    document.getElementById('stat-max-frp').textContent = maxFrp > 0 ? maxFrp.toFixed(1) : '0';
+
 
     // 4. INFOCA Andalucía (Oculta si está extinguido y el filtro está activo)
     const infocaList = document.getElementById('infoca-list');
