@@ -271,20 +271,6 @@ function renderData() {
     document.getElementById('stat-max-frp').textContent = maxFrp > 0 ? maxFrp.toFixed(1) : '0';
 }
 
-export default async function handler(req, res) {
-
-    const response = await fetch(
-        "https://wpr.112cv.gva.es/external/api/storage/descargar/geojson/incidentes/incidente.geojson"
-    );
-
-    const data = await response.text();
-
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Content-Type", "application/json");
-
-    res.send(data);
-}
-
 function setupEventListeners() {
     document.getElementById('toggle-nasa').addEventListener('change', (e) => { state.filters.nasaEnabled = e.target.checked; renderData(); });
     document.getElementById('toggle-cv112').addEventListener('change', (e) => { state.filters.cv112Enabled = e.target.checked; renderData(); });
