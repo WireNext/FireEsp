@@ -270,28 +270,53 @@ function renderData() {
     }
 
     // 2. 112CV
-    const cvList = document.getElementById('incidents-list');
-    cvList.innerHTML = '';
+    const incidentListContainer = document.getElementById('incidents-list');
+    incidentListContainer.innerHTML = '';
     if (state.filters.cv112Enabled) {
         state.cv112RawData.forEach(item => {
             countCv112++;
-            const marker = L.marker([item.lat, item.lon], {
-                icon: L.divIcon({
-                    className: 'custom-div-icon',
-                    html: `<div class="cv112-marker-pulse"><i class="fa-solid fa-fire-flame-curved"></i></div>`,
-                    iconSize: [20, 20], iconAnchor: [10, 10]
-                })
-            }).bindPopup(`<b>112CV:</b> ${item.municipio}<br>${item.descriptionEs}`);
+            const customIcon = L.divIcon({
+                className: 'custom-div-icon',
+                html: `<div class="cv112-marker-pulse"><i class="fa-solid fa-fire-flame-curved"></i></div>`,
+                iconSize: [20, 20],
+                iconAnchor: [10, 10]
+            });
+
+            const popupContent = `
+                <div class="custom-popup">
+                    <div class="popup-header cv112">
+                        <i class="fa-solid fa-fire-flame-curved"></i>
+                        <h3>112 Comunitat Valenciana</h3>
+                    </div>
+                    <div class="popup-body">
+                        <div class="popup-row"><span class="popup-label">Tipo:</span><span class="popup-value"><strong>${item.descriptionEs}</strong></span></div>
+                        <div class="popup-row"><span class="popup-label">Municipio:</span><span class="popup-value">${item.municipio}</span></div>
+                        <div class="popup-row"><span class="popup-label">Dirección:</span><span class="popup-value">${item.direccion}</span></div>
+                        <div class="popup-row"><span class="popup-label">Llamadas:</span><span class="popup-value">${item.asociadas}</span></div>
+                    </div>
+                    <div class="popup-footer">Fuente: 112CV</div>
+                </div>
+            `;
+
+            const marker = L.marker([item.lat, item.lon], { icon: customIcon }).bindPopup(popupContent);
             state.cv112LayerGroup.addLayer(marker);
 
-            const div = document.createElement('div');
-            div.className = 'incident-item';
-            div.innerHTML = `<div class="incident-item-title">${item.municipio}</div><div class="incident-item-sub">${item.descriptionEs}</div>`;
-            div.onclick = () => { state.map.setView([item.lat, item.lon], 13); marker.openPopup(); };
-            cvList.appendChild(div);
+            const listItem = document.createElement('div');
+            listItem.className = 'incident-item';
+            listItem.innerHTML = `
+                <div class="incident-item-title">${item.municipio} - ${item.descriptionEs}</div>
+                <div class="incident-item-sub"><i class="fa-solid fa-location-dot"></i> ${item.direccion}</div>
+            `;
+            listItem.addEventListener('click', () => {
+                state.map.setView([item.lat, item.lon], 13);
+                marker.openPopup();
+                if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('active');
+            });
+            incidentListContainer.appendChild(listItem);
         });
     }
 
+    // 3. JCyL
     const jcylListContainer = document.getElementById('jcyl-list');
     jcylListContainer.innerHTML = '';
     if (state.filters.jcylEnabled) {
