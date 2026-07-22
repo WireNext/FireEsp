@@ -15,7 +15,7 @@ const state = {
 
 const ENDPOINTS = {
     NASA: 'https://firms.modaps.eosdis.nasa.gov/api/area/csv/e5b0c56d0b059dbd11c8dfe53dea278f/VIIRS_SNPP_NRT/world/1/',
-    CV112: 'https://wpr.112cv.gva.es/external/api/storage/descargar/geojson/incidentes/incidente.geojson'
+    CV112: '/api/cv112'
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -269,6 +269,20 @@ function renderData() {
     document.getElementById('count-cv112').textContent = countCv112;
     document.getElementById('stat-total').textContent = countNasa + countCv112;
     document.getElementById('stat-max-frp').textContent = maxFrp > 0 ? maxFrp.toFixed(1) : '0';
+}
+
+export default async function handler(req, res) {
+
+    const response = await fetch(
+        "https://wpr.112cv.gva.es/external/api/storage/descargar/geojson/incidentes/incidente.geojson"
+    );
+
+    const data = await response.text();
+
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Content-Type", "application/json");
+
+    res.send(data);
 }
 
 function setupEventListeners() {
