@@ -232,7 +232,7 @@ function renderData() {
             const popupContent = `
                 <div class="custom-popup">
                     <div class="popup-header cv112">
-                        <i class="fa-solid fa-truck-medical"></i>
+                        <i class="fa-solid fa-fire-flame-curved"></i>
                         <h3>112 Comunitat Valenciana</h3>
                     </div>
                     <div class="popup-body">
