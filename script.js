@@ -22,7 +22,7 @@ const state = {
 const ENDPOINTS = {
     NASA: 'https://firms.modaps.eosdis.nasa.gov/api/area/csv/e5b0c56d0b059dbd11c8dfe53dea278f/VIIRS_SNPP_NRT/world/1/',
     CV112: '/api/cv112',
-    JCYL: 'https://servicios.jcyl.es/incyl/json/emergencias',
+    JCYL: '/api/cyl.js',
     INFOCA: 'https://utility.arcgis.com/usrsvcs/servers/d6d1c0079ddd4c7f8876d58e13fcf1ac/rest/services/INFOCA/AN_INCIDENTES_PRO/FeatureServer/2/query?where=1%3D1&outFields=*&f=geojson'
 };
 
