@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monitor de Incendios en España | NASA FIRMS + 112CV</title>
+    <title>Monitor de Incendios en España | NASA + 112CV + JCyL</title>
     
     <!-- Leaflet CSS & JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
@@ -33,6 +33,9 @@
                         <span class="subtitle">Detección y Emergencias en Tiempo Real</span>
                     </div>
                 </div>
+                <button id="sidebar-close" class="sidebar-close" aria-label="Cerrar panel">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </header>
 
             <div class="sidebar-content">
@@ -54,11 +57,20 @@
                             <input type="checkbox" id="toggle-cv112" checked>
                             <span class="toggle-indicator cv112"></span>
                             <div class="toggle-info">
-                                <span class="toggle-title">
-                                </span>
+                                <span class="toggle-title">112 Comunitat Valenciana</span>
                                 <span class="toggle-sub">Incidentes de incendio activos</span>
                             </div>
                             <span class="badge" id="count-cv112">0</span>
+                        </label>
+
+                        <label class="toggle-card">
+                            <input type="checkbox" id="toggle-jcyl" checked>
+                            <span class="toggle-indicator jcyl"></span>
+                            <div class="toggle-info">
+                                <span class="toggle-title">Junta de Castilla y León</span>
+                                <span class="toggle-sub">Incendios y operativos (INCYL)</span>
+                            </div>
+                            <span class="badge" id="count-jcyl">0</span>
                         </label>
                     </div>
                 </section>
@@ -75,19 +87,6 @@
                             <option value="n">Normal (Nominal)</option>
                             <option value="l">Baja Confianza (Low)</option>
                         </select>
-                    </div>
-
-                    <div class="filter-box">
-                        <label for="frp-range">Potencia Térmica Mínima (FRP MW): <span id="frp-val">0</span></label>
-                        <input type="range" id="frp-range" min="0" max="100" value="0" step="5">
-                    </div>
-
-                    <div class="filter-box">
-                        <label for="search-input">Buscar Municipio / Lugar (112CV):</label>
-                        <div class="search-wrapper">
-                            <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                            <input type="text" id="search-input" placeholder="Ej. Cirat, Peníscola...">
-                        </div>
                     </div>
                 </section>
 
@@ -111,6 +110,14 @@
                     <h2><i class="fa-solid fa-list-ul"></i> Lista de Incidentes 112CV</h2>
                     <div id="incidents-list" class="incidents-list">
                         <p class="empty-msg">Cargando datos del 112CV...</p>
+                    </div>
+                </section>
+
+                <!-- Lista de Incidentes JCyL -->
+                <section class="panel-section list-section">
+                    <h2><i class="fa-solid fa-list-ul"></i> Lista de Incidentes JCyL</h2>
+                    <div id="jcyl-list" class="incidents-list">
+                        <p class="empty-msg">Cargando datos de JCyL...</p>
                     </div>
                 </section>
             </div>
