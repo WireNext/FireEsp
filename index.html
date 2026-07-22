@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monitor de Incendios en España | NASA + 112CV + JCyL</title>
+    <title>Monitor de Incendios en España | NASA + 112CV + JCyL + INFOCA</title>
     
     <!-- Leaflet CSS & JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
@@ -20,6 +20,8 @@
 
     <!-- Custom Styles -->
     <link rel="stylesheet" href="styles.css">
+
+    <link rel="icon" type="image/png" href="logo.png">
 </head>
 <body>
     <div id="app-container">
@@ -72,13 +74,22 @@
                             </div>
                             <span class="badge" id="count-jcyl">0</span>
                         </label>
+
+                        <label class="toggle-card">
+                            <input type="checkbox" id="toggle-infoca" checked>
+                            <span class="toggle-indicator infoca"></span>
+                            <div class="toggle-info">
+                                <span class="toggle-title">INFOCA Andalucía</span>
+                                <span class="toggle-sub">Plan Infoca (Incendios Forestales)</span>
+                            </div>
+                            <span class="badge" id="count-infoca">0</span>
+                        </label>
                     </div>
                 </section>
 
                 <!-- Filtros -->
                 <section class="panel-section">
                     <h2><i class="fa-solid fa-filter"></i> Filtros de Visualización</h2>
-                    
                     <div class="filter-box">
                         <label for="nasa-confidence">Confianza NASA:</label>
                         <select id="nasa-confidence">
@@ -105,19 +116,25 @@
                     </div>
                 </section>
 
-                <!-- Lista de Incidentes 112CV -->
+                <!-- Listas de Incidentes -->
                 <section class="panel-section list-section">
-                    <h2><i class="fa-solid fa-list-ul"></i> Lista de Incidentes 112CV</h2>
+                    <h2><i class="fa-solid fa-list-ul"></i> Lista 112CV</h2>
                     <div id="incidents-list" class="incidents-list">
-                        <p class="empty-msg">Cargando datos del 112CV...</p>
+                        <p class="empty-msg">Cargando...</p>
                     </div>
                 </section>
 
-                <!-- Lista de Incidentes JCyL -->
                 <section class="panel-section list-section">
-                    <h2><i class="fa-solid fa-list-ul"></i> Lista de Incidentes JCyL</h2>
+                    <h2><i class="fa-solid fa-list-ul"></i> Lista JCyL</h2>
                     <div id="jcyl-list" class="incidents-list">
-                        <p class="empty-msg">Cargando datos de JCyL...</p>
+                        <p class="empty-msg">Cargando...</p>
+                    </div>
+                </section>
+
+                <section class="panel-section list-section">
+                    <h2><i class="fa-solid fa-list-ul"></i> Lista INFOCA (Andalucía)</h2>
+                    <div id="infoca-list" class="incidents-list">
+                        <p class="empty-msg">Cargando INFOCA...</p>
                     </div>
                 </section>
             </div>
