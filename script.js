@@ -406,6 +406,24 @@ function renderData() {
 }
 
 function setupEventListeners() {
+    // 1. Control del panel lateral en móviles
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const sidebarClose = document.getElementById('sidebar-close');
+
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.add('active');
+        });
+    }
+
+    if (sidebarClose) {
+        sidebarClose.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+        });
+    }
+
+    // 2. Eventos de capas y filtros
     document.getElementById('toggle-nasa').addEventListener('change', (e) => { state.filters.nasaEnabled = e.target.checked; renderData(); });
     document.getElementById('toggle-cv112').addEventListener('change', (e) => { state.filters.cv112Enabled = e.target.checked; renderData(); });
     document.getElementById('toggle-jcyl').addEventListener('change', (e) => { state.filters.jcylEnabled = e.target.checked; renderData(); });
